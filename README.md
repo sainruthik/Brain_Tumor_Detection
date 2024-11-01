@@ -19,9 +19,29 @@ The final model achieved an impressive **98% accuracy**, demonstrating its robus
 
 ## Model Structure
 
-The dual-channel model combines features extracted from both **InceptionV3** and **Xception** architectures. Each model processes the MRI images separately, and their outputs are combined in the final layers for accurate classification.
+The dual-channel model architecture combines feature extraction from two powerful pretrained models, **InceptionV3** and **Xception**, to classify MRI images into four classes: **glioma**, **meningioma**, **no tumor**, and **pituitary**.
 
-This approach leverages the unique feature extraction capabilities of both models, aiming to maximize accuracy by capturing more detailed patterns in the MRI images, especially useful in medical imaging.
+### Architecture Details
+
+- **Input Layer**: The model accepts input MRI images of shape `(224, 224, 3)`.
+  
+- **First Channel - InceptionV3**: 
+  - The InceptionV3 model, pretrained on ImageNet, processes the input image.
+  - The final output of this channel is passed through a **Global Average Pooling** layer to reduce spatial dimensions.
+
+- **Second Channel - Xception**: 
+  - The Xception model, also pretrained on ImageNet, processes the same input image.
+  - Similar to the first channel, the output is passed through a **Global Average Pooling** layer.
+
+- **Merging and Final Layers**:
+  - The outputs from both InceptionV3 and Xception channels are concatenated, combining their extracted features.
+  - The merged output is passed through a fully connected **Dense** layer with 256 units and ReLU activation for feature refinement.
+  - Finally, a **Dense output layer** with a softmax activation provides probabilities for the four classes: glioma, meningioma, no tumor, and pituitary.
+
+### Summary
+
+This dual-channel architecture leverages both InceptionV3 and Xception for feature extraction, providing high classification accuracy by capturing complementary features from both models.
+
 
 ## Web Application Features
 
