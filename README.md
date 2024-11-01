@@ -7,6 +7,7 @@ This project implements a dual-channel deep learning model to classify brain tum
 - **Glioma**
 - **Pituitary**
 - **Meningioma**
+- **No Tumor**
 
 The final model achieved an impressive **98% accuracy**, demonstrating its robustness in classifying MRI images. This research was also published in the **Evolutionary Artificial Intelligence Proceedings of ICEAI 2023**. [Read the paper here](https://link.springer.com/chapter/10.1007/978-981-99-8438-1_8).
 
