@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Tumor Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <!-- Hero Section with Prediction and Grid -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Detect Brain Tumors with AI</h1>
+            <p>Upload a brain scan image to receive a diagnosis with our advanced machine learning model.</p>
+
+            <!-- Upload Box -->
+            <div class="upload-box" id="uploadBox">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <p>Drop your file here</p>
+                <input type="file" id="imageInput" name="file" accept="image/*" onchange="submitImage()" style="display: none;">
+                <button class="cta-button" onclick="document.getElementById('imageInput').click();">Upload Files</button>
+            </div>
+            <p></p>
+            <!-- Upload Progress -->
+            <div id="uploadProgress" class="progress-section" style="display: none;">
+                <p>Uploading file...</p>
+                <div class="progress-bar">
+                    <div id="progress" class="progress"></div>
+                </div>
+                <p id="progressPercentage">0%</p>
+            </div>
+            
+            <!-- Prediction Results Section -->
+            <div class="prediction-section">
+                <h2>Prediction Results</h2>
+                <p id="predictionResult">Upload an image to see the prediction results.</p>
+            </div>
+
+            <!-- Sample Tumor Types (Image Grid) -->
+            <div class="grid-section">
+                <h2>Sample Tumor Types</h2>
+                <div class="image-grid">
+                    <div class="grid-item"><img src="{{ url_for('static', filename='images/tumor1.jpg') }}" alt="Tumor Sample 1"><p>Meningioma</p></div>
+                    <div class="grid-item"><img src="{{ url_for('static', filename='images/tumor2.jpg') }}" alt="Tumor Sample 2"><p>Glioma</p></div>
+                    <div class="grid-item"><img src="{{ url_for('static', filename='images/tumor3.jpg') }}" alt="Tumor Sample 3"><p>Pituitary Tumor</p></div>
+                    <div class="grid-item"><img src="{{ url_for('static', filename='images/tumor4.jpg') }}" alt="Tumor Sample 4"><p>No Tumor</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Brain Tumor Detection System | Powered by AI</p>
+    </footer>
+
+    <script>
+        async function submitImage() {
+            const fileInput = document.getElementById("imageInput");
+            const progressBar = document.getElementById("progress");
+            const progressPercentage = document.getElementById("progressPercentage");
+            const uploadProgress = document.getElementById("uploadProgress");
+            const predictionResult = document.getElementById("predictionResult");
+
+            if (fileInput.files.length === 0) {
+                predictionResult.innerText = "Please select an image first.";
+                return;
+            }
+
+            uploadProgress.style.display = "block";
+            predictionResult.innerText = "Uploading and processing file...";
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            try {
+                // Simulate the progress bar
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    progressBar.style.width = progress + "%";
+                    progressPercentage.innerText = progress + "%";
+                    if (progress >= 100) clearInterval(interval);
+                }, 300);
+
+                // Send file to backend and wait for prediction response
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.error) {
+                        predictionResult.innerText = "Error: " + result.error;
+                    } else {
+                        predictionResult.innerText = "Predicted Tumor Type: " + result.prediction;
+                    }
+                } else {
+                    predictionResult.innerText = "Failed to upload. Please try again.";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                predictionResult.innerText = "An error occurred. Please check the console for details.";
+            } finally {
+                // Reset progress bar after completion
+                setTimeout(() => {
+                    progressBar.style.width = "0%";
+                    progressPercentage.innerText = "0%";
+                    uploadProgress.style.display = "none";
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
